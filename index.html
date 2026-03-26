@@ -151,6 +151,24 @@
       color: var(--text5);
     }
 
+    .new-badge {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      background: #ff4d6a;
+      padding: 2px 8px;
+      border-radius: 6px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
     .fav-card {
       grid-column: 1 / -1;
     }
@@ -689,9 +707,11 @@
         }
         const count = catPosts.length;
         const readCount = catPosts.filter(p => readList.includes(p.link)).length;
+        const hasUnread = cat.isLatest && catPosts.some(p => !readList.includes(p.link));
         const card = document.createElement('div');
         card.className = 'menu-card';
         card.innerHTML = `
+          ${hasUnread ? '<div class="new-badge">NEW</div>' : ''}
           <div class="icon">${cat.icon}</div>
           <div class="label">${cat.label}</div>
           <div class="count">${count} posts</div>
