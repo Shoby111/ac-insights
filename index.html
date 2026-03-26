@@ -665,8 +665,8 @@
       try {
         const res = await fetch('posts.json');
         allPosts = await res.json();
-        // Pre-compute single tag per post
-        allPosts.forEach(p => { p._tag = getPostTag(p); });
+        // Pre-compute single tag per post + original order index
+        allPosts.forEach((p, i) => { p._tag = getPostTag(p); p._idx = i; });
         document.getElementById('landingSubtitle').textContent = `${allPosts.length} posts — organized`;
         buildMenu();
       } catch (e) {
@@ -683,7 +683,7 @@
       categories.forEach(cat => {
         let catPosts;
         if (cat.isLatest) {
-          catPosts = [...allPosts].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
+          catPosts = allPosts.slice(0, 10);
         } else {
           catPosts = allPosts.filter(cat.filter);
         }
@@ -719,7 +719,8 @@
     function showCategory(cat) {
       currentCategory = cat.label;
       if (cat.isLatest) {
-        currentPosts = [...allPosts].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
+        // Posts are already in page order (newest first from scrape), just take first 10
+        currentPosts = allPosts.slice(0, 10);
       } else {
         currentPosts = allPosts.filter(cat.filter);
       }
@@ -831,7 +832,9 @@
 
       const sorted = [...posts].sort((a, b) => {
         const da = new Date(a.date), db = new Date(b.date);
-        return sortAsc ? da - db : db - da;
+        const dateDiff = sortAsc ? da - db : db - da;
+        if (dateDiff !== 0) return dateDiff;
+        return sortAsc ? a._idx - b._idx : a._idx - b._idx;
       });
 
       const totalPages = Math.ceil(sorted.length / PER_PAGE);
