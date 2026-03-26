@@ -1,0 +1,13 @@
+{
+  "name": "actualized-insights",
+  "version": "1.0.0",
+  "description": "Organized, searchable archive of Actualized.org insights",
+  "scripts": {
+    "scrape": "node scrape.js",
+    "start": "npx serve ."
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "node-fetch": "^3.3.2"
+  }
+}
