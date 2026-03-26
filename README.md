@@ -1,4 +1,4 @@
-# Actualized Insights - Organized
+#  Insights - Organized
 
 A clean, searchable archive of blog insights — organized, grouped, and easy to browse.
 
