@@ -1,6 +1,6 @@
 # Actualized Insights - Organized
 
-A clean, searchable archive of all blog posts from [actualized.org/insights](https://www.actualized.org/insights).
+A clean, searchable archive of blog insights — organized, grouped, and easy to browse.
 
 ## Setup
 
