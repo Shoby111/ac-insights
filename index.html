@@ -847,6 +847,50 @@
       const start = (currentPage - 1) * PER_PAGE;
       const pagePosts = sorted.slice(start, start + PER_PAGE);
 
+      let html_posts;
+      if (currentCategory === 'Latest') {
+        // No grouping — just render posts in order
+        let html = buildPagination(totalPages);
+        pagePosts.forEach(post => {
+          const title = escapeHtml(post.title || '');
+          let rawBody = post.body || escapeHtml(post.bodyText);
+          rawBody = rawBody.replace(/src="\//g, 'src="https://www.actualized.org/');
+          const body = replaceIframes(rawBody);
+          const read = isRead(post.link);
+          const fav = isFav(post.link);
+          const tagLabel = post._tag || 'General';
+          const tags = `<span class="post-tag editable-tag" onclick="editTag(this, '${post.link}')" title="Click to change tag">${tagLabel}</span>`;
+
+          html += `
+            <div class="post ${read ? 'read' : ''}" data-link="${post.link}">
+              <div class="post-header" onclick="togglePost(this)">
+                <span class="post-toggle">▶</span>
+                <span class="post-title">${title || '<em>Untitled</em>'} <span style="color:var(--text4);font-size:12px;margin-left:8px">${post.date}</span></span>
+                <span class="read-dot" title="Read"></span>
+                <button class="post-fav ${fav ? 'favorited' : ''}" onclick="event.stopPropagation(); toggleFavorite(this, '${post.link}')" title="Favorite">
+                  ${fav ? '❤️' : '🤍'}
+                </button>
+                ${post.link ? `<a class="post-link" href="${post.link}" target="_blank" onclick="event.stopPropagation()">↗</a>` : ''}
+              </div>
+              <div class="post-body">
+                ${body}
+                ${tags ? `<div class="post-tags">${tags}</div>` : ''}
+              </div>
+            </div>`;
+        });
+        html += buildPagination(totalPages);
+        content.innerHTML = html;
+        document.getElementById('stats').textContent = `${posts.length} posts`;
+        content.querySelectorAll('.page-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            currentPage = parseInt(btn.dataset.page);
+            applyFilters();
+            window.scrollTo(0, 0);
+          });
+        });
+        return;
+      }
+
       const groups = groupByDate(pagePosts);
       let dates = Object.keys(groups);
       dates.sort((a, b) => {
