@@ -642,6 +642,7 @@
 
     // ---- CATEGORIES ----
     const categories = [
+      { key: 'latest', icon: '🆕', label: 'Latest', filter: null, isLatest: true },
       { key: 'quotes', icon: '💬', label: 'Quotes', filter: p => /quote/i.test(p.title) },
       { key: 'videos', icon: '🎥', label: 'Videos', filter: p => p.body && p.body.includes('iframe') },
       { key: 'images', icon: '🖼️', label: 'Images', filter: p => p.body && p.body.includes('<img') && !p.body.includes('iframe') && !/quote/i.test(p.title) },
@@ -680,7 +681,12 @@
       menu.innerHTML = '';
 
       categories.forEach(cat => {
-        const catPosts = allPosts.filter(cat.filter);
+        let catPosts;
+        if (cat.isLatest) {
+          catPosts = [...allPosts].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
+        } else {
+          catPosts = allPosts.filter(cat.filter);
+        }
         const count = catPosts.length;
         const readCount = catPosts.filter(p => readList.includes(p.link)).length;
         const card = document.createElement('div');
@@ -712,7 +718,11 @@
 
     function showCategory(cat) {
       currentCategory = cat.label;
-      currentPosts = allPosts.filter(cat.filter);
+      if (cat.isLatest) {
+        currentPosts = [...allPosts].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
+      } else {
+        currentPosts = allPosts.filter(cat.filter);
+      }
       currentPage = 1;
       sortAsc = false;
       activeTag = '';
