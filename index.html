@@ -830,12 +830,17 @@
         return;
       }
 
-      const sorted = [...posts].sort((a, b) => {
-        const da = new Date(a.date), db = new Date(b.date);
-        const dateDiff = sortAsc ? da - db : db - da;
-        if (dateDiff !== 0) return dateDiff;
-        return sortAsc ? a._idx - b._idx : a._idx - b._idx;
-      });
+      let sorted;
+      if (currentCategory === 'Latest') {
+        sorted = [...posts]; // keep original order from scraper
+      } else {
+        sorted = [...posts].sort((a, b) => {
+          const da = new Date(a.date), db = new Date(b.date);
+          const dateDiff = sortAsc ? da - db : db - da;
+          if (dateDiff !== 0) return dateDiff;
+          return a._idx - b._idx;
+        });
+      }
 
       const totalPages = Math.ceil(sorted.length / PER_PAGE);
       if (currentPage > totalPages) currentPage = totalPages;
